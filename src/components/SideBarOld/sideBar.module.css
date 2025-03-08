@@ -1,0 +1,52 @@
+.sidebar_container{
+    /* border-top-left-radius: 9px;
+    border-bottom-left-radius: 9px; */
+   height: 100%;
+}
+.dashboard_icon{
+    cursor: pointer;
+    font-size: var(--main-heading);
+    color:white;
+    display: flex;
+}
+.separator_text{
+    font-family: var(--font-public);
+    color: gray;
+    font-size: var(--main-para);
+}
+.small_view_ul_list li{
+    height: 30px;
+    cursor: pointer;
+    align-content: center;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.list_item
+{
+    color: white;
+    font-size: var(--main-heading);
+}
+.active_list_item
+{
+  background-color:silver;
+  border-radius: 1px !important;
+}
+.separator_text{
+    height: 25px !important;
+    cursor: default !important;
+}
+.large_view_ul_list li{
+    padding-left: 10px;
+    height: 40px;
+    cursor: pointer;
+}
+.large_list_item
+{
+    font-family: var(--font-public);
+    color: white;
+    font-size: var(--main-para);
+    background-color:inherit;
+}

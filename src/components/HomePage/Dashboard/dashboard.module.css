@@ -1,0 +1,87 @@
+*{
+    box-sizing: border-box;
+}
+.dashboard_card{
+    border: 0.7px solid #c9c9c9;
+    border-radius: 6px;
+    box-shadow: 0 5px 8px 0 #0000001a;
+    cursor: pointer;
+    padding: 10px;
+    background-color: var(--color-white);
+}
+.dashboard_card:hover{
+    transform: scale(1.02);
+}
+
+.card_heading{
+    font-family: var(--font-public);
+    font-size: var(--main-heading);
+    font-weight: var(--font-weight500);
+    color: var(--color-gray);
+}
+.card_stats_container{
+    width: 120px;
+    height: 30px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content: space-between;
+    padding: 0px 10px;
+}
+.card_stats_text{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight600);
+    color: inherit;
+}
+.dropdown_btn{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color: var(--color-gray);
+}
+.payable_text{
+    font-family: var(--font-public);
+    font-size: var(--main-heading);
+    font-weight: var(--font-weight500);
+    color: var(--color-gray);
+}
+
+.recent_card{
+    composes:dashboard_card;
+    cursor: unset;
+}
+.recent_card:hover{
+    transform: none !important;
+}
+.payable_item{
+    width: 100%;
+    border: 0.7px solid #c9c9c9;
+    border-radius: 6px;
+}
+.borrower_name{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color: var(--color-gray);
+}
+.user_avatar{
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background-color: aqua;
+}
+.amount_text{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color: var(--color-red);
+}
+.due_date_text{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color: var(--color-blue);
+    word-wrap: normal;
+}

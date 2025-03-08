@@ -1,0 +1,84 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@import "tailwindcss";
+
+*{
+  box-sizing: border-box;
+}
+
+body {
+    margin: 0 !important;
+    line-height: normal;
+  font-family:var(--font-poppins);
+  background:var(--page-bg);
+  }
+p{
+  margin: 0;
+}
+h1{
+  margin: 0px;
+}
+a{
+  color:currentColor;
+}
+
+button{
+  cursor: pointer;
+  background-color: transparent;
+  font-family: var(--font-public);
+  color: inherit;
+}
+ul{
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+:root{
+    --font-public:"Poppins";
+    --font-size18:18px;
+    --main-heading:16px;
+    --sub-heading:14px;
+    --main-para:12px;
+    --sub-para:10px;
+    --description:8px;
+    --font-weight300:300;
+    --font-weight400:400;
+    --font-weight500:500;
+    --font-weight600:600;
+}
+
+/* Define your theme variables */
+@layer base {
+  :root {
+    --page-bg:#e8e8e8;
+    --color-gray:#6D6976;
+    --color-gray1:#c9c9c9;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-blue:#7367F0;
+    --color-red:#FA4242;
+    --dropdown-bg:#f9f9f9;
+    --input-bg:#ffffff;
+  }
+  [data-theme='dark'] {
+    --page-bg:#000000;
+  --color-white: #000000;
+    --color-black:#ffffff;
+    --color-blue:#7367F0;
+    --color-gray:#e8e8e8;
+    --dropdown-bg:#212121;
+    --input-bg:#212121;
+  }
+}
+
+
+@media screen and (max-width:768px) {
+  :root{
+    --main-heading:16px;
+    --sub-heading:14px;
+    --main-para:12px;
+    --sub-para:8px;
+    --description:6px;
+  }
+}

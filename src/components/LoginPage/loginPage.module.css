@@ -1,0 +1,39 @@
+*{
+    box-sizing: border-box;
+}
+.brand_img{
+    width: 100px;
+    align-self: center;
+
+}
+.forgot_password{
+    font-family:var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color:var(--color-black);
+}
+.description{
+    font-family:var(--font-public);
+    font-size: var(--sub-heading);
+    font-weight: var(--font-weight300);
+    color: lightslategrey;
+}
+.social_text{
+    font-family:var(--font-public);
+    font-size: var(--sub-heading);
+    font-weight: var(--font-weight500);
+    color: var(--color-black);
+}
+.create_now_text{
+    composes:description;
+    color:var(--color-black) !important;
+    font-weight: var(--font-weight500) !important;
+    text-decoration: none;
+}
+/* Create Account Styling */
+.welcome_text{
+    font-family:var(--font-public);
+    font-size: var(--main-heading);
+    font-weight: var(--font-weight500);
+    color: var(--color-black);
+}

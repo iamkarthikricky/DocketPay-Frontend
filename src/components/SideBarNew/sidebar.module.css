@@ -1,0 +1,189 @@
+.header_container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-white);
+}
+.brand_img{
+    width:auto;
+    height: 25px;
+}
+.hamburger{
+font-size: 25px;
+    color:var(--color-black);
+}
+@media  screen and (min-width:768px) {
+    .brand_img{
+    
+        height: 30px;
+    }
+}
+.theme_btn{
+  color: var(--color-black);
+  font-size: 25px;
+}
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0px 0px 10px;
+  }
+  
+  .navItem {
+    display: flex;
+    align-items: center;
+    color:var(--color-gray);
+    font-size: var(--main-heading);
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: color 0.3s ease-in-out, border-left 0.3s ease-in-out;
+    position: relative; /* Needed for pseudo-element */
+    height: 50px;
+  }
+  .navItem:hover{
+    color: var(--color-blue);
+    background-color: var(--dropdown-bg);
+    border-radius: 6px;
+  }
+  
+  .icon {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+  
+  /* Active Route Styling */
+  .active {
+    color:var(--color-blue) !important;
+    font-weight: bold;
+  }
+
+  .active:hover{
+    background-color: none;
+    color: none;
+  }
+  
+  /* Curved Left Border */
+  .active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 100%; /* Adjust for size */
+    width: 5px;
+    background-color:var(--color-blue);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+.user_info{
+    width: 100%;
+    border-top: 0.7px solid var(--color-gray1);
+    align-self: baseline;
+    height: 75px;
+    padding: 12px;
+}
+.side_bar_container{
+    position: sticky;
+    border-right: 0.7px solid var(--color-gray1);
+    background-color:var(--color-white);
+}
+.user_info_name{
+    font-family: var(--font-public);
+    font-size: var(--sub-heading);
+    font-weight: var(--font-weight400);
+    line-height: 1;
+    white-space: nowrap;   /* Prevents text from wrapping */
+  overflow: hidden;      /* Hides overflow */
+  text-overflow: ellipsis; /* Adds "..." */
+  max-width: 150px; /* Adjust as needed */
+  color: var(--color-black);
+}
+
+.user_info_email{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight500);
+    color: var(--color-gray);
+    line-height: normal;
+    white-space: nowrap;   /* Prevents text from wrapping */
+    overflow: hidden;      /* Hides overflow */
+    text-overflow: ellipsis; /* Adds "..." */
+    max-width: 150px; /* Adjust as needed */
+}
+.logout_btn{
+    padding: 0px;
+    display: flex;
+    font-size: 20px;
+    color: var(--color-black);
+}
+.gold1{
+    height: 35px;
+    width: 35px;
+    background-color: #fbff06;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.gold2{
+    height: 30px;
+    width: 30px;
+    background-color:#ffe333;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+.logout_yes{
+    cursor: pointer;
+}
+.logout_no{
+    cursor: pointer;
+}
+
+
+/* CSS */
+.logout_yes {
+  background-color: #13aa52;
+  border: 1px solid #13aa52;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-family:var(--font-public);
+  font-size: var(--sub-heading);
+  font-weight: 400;
+  outline: none;
+  outline: 0;
+  padding: 4px 20px;
+  text-align: center;
+  transform: translateY(0);
+  transition: transform 150ms, box-shadow 150ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.logout_yes:hover {
+  box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .logout_yes {
+    padding: 2px 25px;
+  }
+}
+
+.logout_no{
+    composes:logout_yes;
+    background-color: transparent;
+    border: 1px solid black;
+    color: black;
+}
