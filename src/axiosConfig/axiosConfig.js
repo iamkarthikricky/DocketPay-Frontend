@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: ' http://localhost:5000', // Base URL
+  baseURL: 'https://docketpay-backend-production.up.railway.app', // Base URL
 
   timeout: 10000, // Request timeout in milliseconds
   headers: {
