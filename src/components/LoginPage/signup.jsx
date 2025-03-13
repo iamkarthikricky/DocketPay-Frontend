@@ -5,11 +5,12 @@ import { FcGoogle } from "react-icons/fc";
 import { NavLink, useNavigate } from "react-router-dom";
 import BrandImg from "../../assets/brand_img.png";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Divider, Form,message } from 'antd';
 import axiosInstance from '../../axiosConfig/axiosConfig';
-import { StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
+import { LoginWithGoogle, StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
+import { toast } from "react-toastify";
 
 const AddUser=()=>{
     const [form] = Form.useForm();
@@ -20,46 +21,46 @@ const AddUser=()=>{
         console.log("Failed:", errorInfo);
       };
 
-      const navigate=useNavigate()
+     
       
       const onFinish= async(values) => {
        try{
         setIsLoading(true)
-        const response = await axiosInstance.post("/user/register",values)
-        console.log(response)
-        if(response.status === 200){
+          await axiosInstance.post("/user/register",values)
           setIsLoading(false)
-       
-          navigate("/verify-account/:token")
-        }
+          toast.info("Check your email to verify your account")
        }catch(error){
         setIsLoading(false)
+
+        //new 
         if (error.response) {
-            const { status, data } = error.response;
-            const errorMessage = data?.message || "An error occurred";
-            // Define a common function to set error for form fields
-            const setFieldError = (fieldName, message) => {
-              form.setFields([
-                {
-                  name: fieldName,
-                  errors: [message],
-                },
-              ]);
-            }
-              // Handle different status codes and set appropriate field errors
-        if (status === 404) {
-            console.log("triggered")
-            setFieldError("email", errorMessage);
+          const { statusCode, errorType, message } = error.response.data;
+          if (statusCode === 400 && errorType === "MISSING_CREDENTIALS") {
+            toast.error("Please fill in all fields.");
+          } else if (statusCode === 409 && errorType === "EMAIL_ALREADY_EXISTS") {
+            form.setFields([
+              {
+                name: "email",
+                errors: [message],
+              },
+            ]);
+          } else if (statusCode === 500 && errorType === "EMAIL_SENDING_FAILED") {
+            toast.info("User registered, but verification email failed.");
+
+          } else if (statusCode === 500 && errorType === "SERVER_ERROR" ) {
+            toast.error("Server error.");
           }
-          if(status === 400){
-            message.error(`${errorMessage}`,3);
-          }
-        }    
+        } else {
+          toast.error("Network error.");
+        }  
        }    
       };
 
       const validateEmail = (_, value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
+        if (value.length > 35) {
+          return Promise.reject(new Error('Email must be at most 35 characters!'));
+        }
         if (!value) {
           return Promise.reject(new Error("Email is required"));
         } else if (!emailRegex.test(value)) {
@@ -114,11 +115,16 @@ const AddUser=()=>{
         }
     
         if (value.length > 20) {
-          return Promise.reject(new Error('Name must be at most 20 characters!'));
+          return Promise.reject(new Error('Name must be at most 25 characters!'));
         }
     
         return Promise.resolve(); // Valid input
       };
+
+
+      useEffect(() => {
+       document.title="Register"
+      }, []);
     
     return(
         <div className="h-full mt-3">
@@ -140,7 +146,7 @@ const AddUser=()=>{
              <StyledFormItem
             label="Name"
             name="name"
-            rules={[{ validator: validateName }]}
+            rules={[{ validator: validateName},{ max: 30, message: "Name cannot exceed 30 characters" }]}
           >
             <StyledFormInput disabled={isLoading} placeholder="Enter your name" />
           </StyledFormItem>
@@ -188,10 +194,10 @@ const AddUser=()=>{
       margin:"0px"
     }}>or</Divider>
     <div className="flex flex-col gap-4">
-      <button className="w-full mt-5 h-9 border rounded-lg flex items-center justify-center gap-2 ">
-                <FcGoogle />
-                <p className={styles.social_text}>Google</p>
-              </button>
+
+  <LoginWithGoogle buttonText="Google" />
+
+
               <p className={`${styles.description} text-center`}>
                 Already have an account?{" "}
                 <NavLink to="/login"  className={styles.create_now_text}>

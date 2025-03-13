@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000', // Base URL
+  baseURL: 'https://docketpay-backend-production.up.railway.app', // Base URL
 
   timeout: 10000, // Request timeout in milliseconds
   headers: {
@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       // Redirect to login or handle token expiration
       localStorage.removeItem("token")
-      window.location.href = '/login';
+
     }
     return Promise.reject(error);
   }

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isHeaderExpanded: false,
-    darkMode: JSON.parse(localStorage.getItem("darkMode")) ?? false,
+    darkMode: JSON.parse(localStorage.getItem("darkMode")) ?? true,
 };
 
 const docketPaySlice = createSlice({

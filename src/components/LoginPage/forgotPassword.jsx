@@ -8,6 +8,7 @@ import { StyledButton, StyledForm, StyledFormInput, StyledFormItem } from "./log
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateUserInfo } from "../../redux/authSlice";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const [form] = Form.useForm();
@@ -27,42 +28,47 @@ const ForgotPassword = () => {
   const onFinish = async(values) => {
     try{
       setIsLoading(true)
-      const response = await axiosInstance.post("/forgot-password",{email:values.email})
-      console.log(response)
-      if(response.status === 200){
+      const response = await axiosInstance.post("/user/forgot-password",{email:values.email})
         sessionStorage.setItem("userEmail",values?.email)
         dispatch(updateUserInfo({email:values.email}))
         setIsLoading(false);
         sessionStorage.setItem("isLinkSent",true)
         setOnSentLink(true);
-      }
+        toast.info("Reset instructions have been sent to your mail")
     }
+
     catch(error){
       setIsLoading(false)
+
       if (error.response) {
-        const { status, data } = error.response;
-        const errorMessage = data?.message || "An error occurred";
-           // Define a common function to set error for form fields
-           const setFieldError = (fieldName, message) => {
+        const { statusCode,  message } = error.response.data;
+
+          if (statusCode === 400) {
             form.setFields([
               {
-                name: fieldName,
+                name: "email",
                 errors: [message],
               },
             ]);
-          };
-          if (status === 404) {
-            setFieldError("email", errorMessage);
-          }
-          else if (status === 500 || status === 400) {
-           message.error(errorMessage)
-          }
+                }
+            else  if (statusCode === 404) {
+              form.setFields([
+                {
+                  name: "email",
+                  errors: [message],
+                },
+              ]);
+                  }
+
+                  else if (statusCode === 500) {
+                    toast.error(message)
+                  }
       }
+
+      //test
     }
   };
 
- 
-  console.log(isLinkSent)
 
 
   const validateEmail = (_, value) => {

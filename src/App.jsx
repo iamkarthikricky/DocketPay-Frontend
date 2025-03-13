@@ -17,6 +17,10 @@ import { useEffect } from 'react';
 import { UpdatePassword } from './components/LoginPage/updatePassword';
 import { VerifyAccount } from './components/LoginPage/verifyAccount';
 
+
+
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+
 const App=()=>{
 
   const token = useSelector((state) => state.auth.token); // Get token from Redux
@@ -30,7 +34,14 @@ const App=()=>{
     }
   }, [darkMode]);
 
+
+  
+
   return(
+    <div>
+
+    
+    <GoogleOAuthProvider clientId="667789602538-rf1am23pahsq6o1hicv2mgq9saj016sg.apps.googleusercontent.com">
     <>
     <Router>
        <Routes>
@@ -41,7 +52,7 @@ const App=()=>{
           <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
 
           {/* If user is logged in, redirect them to /dashboard, else show the create account page */}
-          <Route path="/signup" element={token ? <Navigate to="/dashboard" replace /> : <CreateAccount />} />
+          <Route path="/register" element={token ? <Navigate to="/dashboard" replace /> : <CreateAccount />} />
 
           <Route path="/verify-email/:token"  element={token ? <Navigate to="/dashboard" replace /> : <VerifyAccount />} />
           {/* 7893917079 */}
@@ -67,8 +78,13 @@ const App=()=>{
        
         </Routes>
   </Router>
-  <ToastContainer />
   </>
+  </GoogleOAuthProvider>
+  <ToastContainer />
+  
+
+  </div>
+     
   )
 }
 
