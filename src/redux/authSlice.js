@@ -1,7 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-  token: localStorage.getItem("token") || null, // Get token from localStorage
+  token: localStorage.getItem("token") ?? null, // Get token from localStorage
+  currentUserInfo:{currentStep:1,userEmail:null}
 };
 
 const authSlice = createSlice({
@@ -16,8 +17,15 @@ const authSlice = createSlice({
       state.token = null; // Remove from Redux
       localStorage.removeItem("token"); // Remove from localStorage
     },
+    updateUserInfo: (state, action) => {
+      state.currentUserInfo = {
+        ...state.currentUserInfo, // Preserve existing state
+        ...action.payload, // Merge new values
+      };    
+    }
+    
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout,updateUserInfo } = authSlice.actions;
 export default authSlice.reducer;

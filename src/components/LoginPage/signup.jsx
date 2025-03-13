@@ -7,7 +7,6 @@ import BrandImg from "../../assets/brand_img.png";
 
 import { useState } from "react";
 
-
 import { Divider, Form,message } from 'antd';
 import axiosInstance from '../../axiosConfig/axiosConfig';
 import { StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
@@ -22,22 +21,22 @@ const AddUser=()=>{
       };
 
       const navigate=useNavigate()
-
+      
       const onFinish= async(values) => {
        try{
         setIsLoading(true)
-        const response = await axiosInstance.post("/sign-up",values)
+        const response = await axiosInstance.post("/user/register",values)
         console.log(response)
         if(response.status === 200){
-           setIsLoading(false)
-           const {email} = values
-          navigate("/verify-account", { state: { email } });
+          setIsLoading(false)
+       
+          navigate("/verify-account/:token")
         }
        }catch(error){
         setIsLoading(false)
         if (error.response) {
             const { status, data } = error.response;
-            const errorMessage = data?.errorMessage || "An error occurred";
+            const errorMessage = data?.message || "An error occurred";
             // Define a common function to set error for form fields
             const setFieldError = (fieldName, message) => {
               form.setFields([

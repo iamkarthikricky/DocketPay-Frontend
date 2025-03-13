@@ -14,6 +14,9 @@ import Transactions from './components/HomePage/Transactions/Transactions';
 import Settings from './components/HomePage/Settings/Settings';
 import Notifications from './components/HomePage/Notifications/Notifications';
 import { useEffect } from 'react';
+import { UpdatePassword } from './components/LoginPage/updatePassword';
+import { VerifyAccount } from './components/LoginPage/verifyAccount';
+
 const App=()=>{
 
   const token = useSelector((state) => state.auth.token); // Get token from Redux
@@ -40,12 +43,19 @@ const App=()=>{
           {/* If user is logged in, redirect them to /dashboard, else show the create account page */}
           <Route path="/signup" element={token ? <Navigate to="/dashboard" replace /> : <CreateAccount />} />
 
-          
+          <Route path="/verify-email/:token"  element={token ? <Navigate to="/dashboard" replace /> : <VerifyAccount />} />
+          {/* 7893917079 */}
           {/* If user is logged in, redirect them to /dashboard, else show the create account page */}
           <Route path="/forgot-password" element={token ? <Navigate to="/dashboard" replace /> : <ForgotPassword />} />
 
              {/* If user is logged in, redirect them to /dashboard, else show the create account page */}
-             <Route path="/verify-account" element={token ? <Navigate to="/dashboard" replace /> : <ForgotPassword />} />
+             {/* <Route path="/verify-account" element={token ? <Navigate to="/dashboard" replace /> : <VerifyAccount />} /> */}
+
+             <Route
+  path="/reset-password/:token"
+  element={token ? <Navigate to="/dashboard" replace /> : <UpdatePassword />}
+/>
+
 
           {/* Protected route for /dashboard */}
           <Route path="/" element={<SideBar />}>

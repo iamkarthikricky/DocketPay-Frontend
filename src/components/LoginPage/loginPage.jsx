@@ -3,6 +3,7 @@ import styles from "./loginPage.module.css";
 import { FcGoogle } from "react-icons/fc";
 
 import { Button, Divider, Form, Input,Alert } from "antd";
+import { jwtDecode } from "jwt-decode";
 
 import { useState,useEffect } from "react";
 import styled from "styled-components";
@@ -12,6 +13,12 @@ import BrandImg from "../../assets/brand_img.png";
 import axiosInstance from "../../axiosConfig/axiosConfig";
 
 import { toast } from 'react-toastify';
+
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login, updateUserInfo } from "../../redux/authSlice";
+
 
 // Create a styled component for Input
 
@@ -142,6 +149,42 @@ color:var(--color-black);
   }
 `;
 
+export const LoginWithGoogle=()=>{
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async(credentialResponse) => {
+     const response = await axios.post("http://localhost:5000/auth/google",{code:credentialResponse?.access_token})
+      // Send the credentialResponse to backend for verification & JWT issuance
+      if(response?.data?.token){
+        dispatch(login(response?.data?.token))
+        navigate('/')
+      }
+    },
+    onError: () => {
+      console.log("Login Failed");
+    },
+  
+   
+  });
+
+  function handleGoogleLogin() {
+    googleLogin(); // Call the returned function when needed
+  }
+
+  return (
+   
+    <button className="w-full mt-5 h-9 rounded-lg flex items-center justify-center gap-2 " onClick={handleGoogleLogin}>
+    `<FcGoogle />
+    <p className={styles.social_text}>Continue with Google</p>
+  </button>
+ 
+  )
+}
+
+
 export const EmailLogin = () => {
     const [form] = Form.useForm();
 
@@ -165,26 +208,30 @@ export const EmailLogin = () => {
     };
   
     const navigate=useNavigate()
+    const dispatch = useDispatch()
 
     const onFinish = async (values) => {
       const { email, password } = values;
       const requestData = { email, password };  
       try {
         setIsLoading(true)
-        const response = await axiosInstance.post("/sign-in", requestData);
+        const response = await axiosInstance.post("/user/login", requestData);
         if (response.status === 200) {
             setIsLoading(false)
             localStorage.setItem("token",response.data.token)
             navigate("/dashboard")
         }
-        else{
-          alert("Something went wrong !")
-        }
       } catch (error) {
         setIsLoading(false)
+        if(error.response.status === 400)
+          {
+            dispatch(updateUserInfo({userEmail:email}))
+            localStorage.setItem("userEmail",email)
+            navigate("/verify-account/:token")
+          }
         if (error.response) {
           const { status, data } = error.response;
-          const errorMessage = data?.errorMessage || "An error occurred";
+          const errorMessage = data?.message || "An error occurred";
           // Define a common function to set error for form fields
           const setFieldError = (fieldName, message) => {
             form.setFields([
@@ -212,7 +259,8 @@ export const EmailLogin = () => {
     const onFinishFailed = (errorInfo) => {
       console.log("Failed:", errorInfo);
     };
-  
+
+
     return (
       <div className="h-full mt-3">
           <StyledForm
@@ -263,10 +311,9 @@ export const EmailLogin = () => {
       margin:"0px"
     }}>or</Divider>
     <div className="flex flex-col gap-2">
-        <button className="w-full mt-5 h-9 rounded-lg flex items-center justify-center gap-2 ">
-                <FcGoogle />
-                <p className={styles.social_text}>Continue with Google</p>
-              </button>
+      <GoogleOAuthProvider clientId="667789602538-rf1am23pahsq6o1hicv2mgq9saj016sg.apps.googleusercontent.com">
+              <LoginWithGoogle />
+            </GoogleOAuthProvider>
               <p className={`${styles.description} text-center`}>
                 Don't have an account?{" "}
                 <NavLink to="/signup"  className={styles.create_now_text}>
