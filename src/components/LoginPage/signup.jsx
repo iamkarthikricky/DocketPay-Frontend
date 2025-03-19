@@ -5,12 +5,11 @@ import { FcGoogle } from "react-icons/fc";
 import { NavLink, useNavigate } from "react-router-dom";
 import BrandImg from "../../assets/brand_img.png";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Divider, Form,message } from 'antd';
 import axiosInstance from '../../axiosConfig/axiosConfig';
-import { LoginWithGoogle, StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
-import { toast } from "react-toastify";
+import { StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
 
 const AddUser=()=>{
     const [form] = Form.useForm();
@@ -21,46 +20,46 @@ const AddUser=()=>{
         console.log("Failed:", errorInfo);
       };
 
-     
+      const navigate=useNavigate()
       
       const onFinish= async(values) => {
        try{
         setIsLoading(true)
-          await axiosInstance.post("/user/register",values)
+        const response = await axiosInstance.post("/user/register",values)
+        console.log(response)
+        if(response.status === 200){
           setIsLoading(false)
-          toast.info("Check your email to verify your account")
+       
+          navigate("/verify-account/:token")
+        }
        }catch(error){
         setIsLoading(false)
-
-        //new 
         if (error.response) {
-          const { statusCode, errorType, message } = error.response.data;
-          if (statusCode === 400 && errorType === "MISSING_CREDENTIALS") {
-            toast.error("Please fill in all fields.");
-          } else if (statusCode === 409 && errorType === "EMAIL_ALREADY_EXISTS") {
-            form.setFields([
-              {
-                name: "email",
-                errors: [message],
-              },
-            ]);
-          } else if (statusCode === 500 && errorType === "EMAIL_SENDING_FAILED") {
-            toast.info("User registered, but verification email failed.");
-
-          } else if (statusCode === 500 && errorType === "SERVER_ERROR" ) {
-            toast.error("Server error.");
+            const { status, data } = error.response;
+            const errorMessage = data?.message || "An error occurred";
+            // Define a common function to set error for form fields
+            const setFieldError = (fieldName, message) => {
+              form.setFields([
+                {
+                  name: fieldName,
+                  errors: [message],
+                },
+              ]);
+            }
+              // Handle different status codes and set appropriate field errors
+        if (status === 404) {
+            console.log("triggered")
+            setFieldError("email", errorMessage);
           }
-        } else {
-          toast.error("Network error.");
-        }  
+          if(status === 400){
+            message.error(`${errorMessage}`,3);
+          }
+        }    
        }    
       };
 
       const validateEmail = (_, value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
-        if (value.length > 35) {
-          return Promise.reject(new Error('Email must be at most 35 characters!'));
-        }
         if (!value) {
           return Promise.reject(new Error("Email is required"));
         } else if (!emailRegex.test(value)) {
@@ -115,16 +114,11 @@ const AddUser=()=>{
         }
     
         if (value.length > 20) {
-          return Promise.reject(new Error('Name must be at most 25 characters!'));
+          return Promise.reject(new Error('Name must be at most 20 characters!'));
         }
     
         return Promise.resolve(); // Valid input
       };
-
-
-      useEffect(() => {
-       document.title="Register"
-      }, []);
     
     return(
         <div className="h-full mt-3">
@@ -142,13 +136,14 @@ const AddUser=()=>{
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="on"
+              className="flex flex-col gap-3"
         >
              <StyledFormItem
             label="Name"
             name="name"
-            rules={[{ validator: validateName},{ max: 30, message: "Name cannot exceed 30 characters" }]}
+            rules={[{ validator: validateName }]}
           >
-            <StyledFormInput disabled={isLoading} placeholder="Enter your name" />
+            <StyledFormInput disabled={isLoading} placeholder="Enter your name" autoComplete="off"/>
           </StyledFormItem>
         
                    <StyledFormItem
@@ -156,7 +151,7 @@ const AddUser=()=>{
             name="email"
             rules={[{ validator: validateEmail }]}
           >
-            <StyledFormInput disabled={isLoading} placeholder="Enter your email address" />
+            <StyledFormInput disabled={isLoading} placeholder="Enter your email address" autoComplete="off"/>
           </StyledFormItem>
         
           <StyledFormItem
@@ -194,10 +189,10 @@ const AddUser=()=>{
       margin:"0px"
     }}>or</Divider>
     <div className="flex flex-col gap-4">
-
-  <LoginWithGoogle buttonText="Google" />
-
-
+      <button className="w-full mt-5 h-9 border rounded-lg flex items-center justify-center gap-2 ">
+                <FcGoogle />
+                <p className={styles.social_text}>Google</p>
+              </button>
               <p className={`${styles.description} text-center`}>
                 Already have an account?{" "}
                 <NavLink to="/login"  className={styles.create_now_text}>

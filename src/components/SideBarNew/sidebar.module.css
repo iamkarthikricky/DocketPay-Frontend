@@ -139,11 +139,11 @@ font-size: 25px;
     align-items: center;
     font-size: 18px;
 }
-.logout_yes{
-    cursor: pointer;
-}
-.logout_no{
-    cursor: pointer;
+.modal_heading{
+  font-family: var(--font-public);
+  font-size: var(--main-para);
+  font-weight: var(--font-weight500);
+  color: var(--color-gray);
 }
 
 
@@ -184,6 +184,6 @@ font-size: 25px;
 .logout_no{
     composes:logout_yes;
     background-color: transparent;
-    border: 1px solid black;
-    color: black;
+    border: 1px solid var(--color-black);
+    color: var(--color-black);
 }

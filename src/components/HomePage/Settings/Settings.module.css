@@ -1,23 +1,23 @@
 .profile_container{
     background-color: var(--color-white);
-    border-radius: 30px;
-    height: 500px;
+    border-radius: 20px;
+    height: auto;
     margin: 0 15px;
-    display: flex;
-    flex-direction: column;
     padding: 20px 10px;
 }
 
-@media screen and (min-width:1024px) {
+@media  screen and (min-width:768px) {
     .profile_container{
-        flex-direction: row;
-        justify-content: start;
+        padding: 30px;
     }
 }
+
 .user_img{
     height: 100px;
     width: 100px;
     border-radius: 50px;
     border: 1px solid red;
+    display: flex;
+    align-items: center;
 
 }

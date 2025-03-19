@@ -23,14 +23,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 // Styled Form.Item
 
 export const StyledForm = styled(Form)`
-  display: flex;
-  flex-direction: column;
-  gap: 0px !important;
-  background-color: none !important;
+  width:100% !important;
+   background-color: transparent !important;
 `;
 
 export const StyledFormItem = styled(Form.Item)`
-  margin-bottom: 15px !important;
+  margin-bottom: unset !important;
+  min-width:100% !important;
   .ant-form-item-label {
     padding-bottom: 3px !important;
   }
@@ -48,9 +47,18 @@ export const StyledFormItem = styled(Form.Item)`
     font-family: var(--font-public);
     margin: 3px 0px !important;
   }
+    input:-webkit-autofill {
+  background-color:red !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+}
+
 `;
 
 export const StyledFormInput = styled(Input)`
+input:-webkit-autofill {
+  background-color: transparent !important;
+}
+
   width: 100%; // Custom width
   border-radius: 5px; // Rounded corners
 
@@ -289,6 +297,7 @@ export const EmailLogin = () => {
         }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
+        className="flex flex-col gap-3"
       >
         <StyledFormItem
           label="Email"
@@ -298,6 +307,7 @@ export const EmailLogin = () => {
           <StyledFormInput
             disabled={isLoading}
             placeholder="Enter email address"
+            autoComplete="off"
           />
         </StyledFormItem>
         <StyledFormItem

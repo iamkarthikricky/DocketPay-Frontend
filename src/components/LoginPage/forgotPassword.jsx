@@ -155,7 +155,7 @@ const navigate = useNavigate();
                   name="email"
                   rules={[{ validator: validateEmail }]}
                 >
-                  <StyledFormInput placeholder="Enter your email address" disabled={isLoading} />
+                  <StyledFormInput placeholder="Enter your email address" disabled={isLoading} autoComplete="off" />
                 </StyledFormItem>
                 <StyledFormItem>
                 <StyledButton loading={isLoading}

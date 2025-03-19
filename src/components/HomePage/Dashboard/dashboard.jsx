@@ -13,6 +13,7 @@ import { FaCalendarXmark } from "react-icons/fa6";
 import { BsCurrencyRupee } from "react-icons/bs";
 
 import { Dropdown } from "antd";
+import axiosInstance from "../../../axiosConfig/axiosConfig";
 
 
 const listItems = [
@@ -234,8 +235,15 @@ const PayablesCard=()=>{
 const Dashboard = () => {
   useEffect(() => {
     document.title = "Dashboard";
+    getAllUsers()
   }, []);
 
+  const getAllUsers=async()=>{
+    try{
+      const response = await axiosInstance.get("/users")
+      console.log(response?.data)
+    }catch(error){console.log(error)}
+  }
 
   return (
     <div className="flex flex-col gap-4">

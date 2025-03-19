@@ -35,10 +35,11 @@ const StyledDrawer = styled(Drawer)`
   }
 `;
 
-const StyledLogoutModal=styled(Modal)`
+export const StyledLogoutModal=styled(Modal)`
     min-width:200px !important;
     .ant-modal-content{
       padding:15px;
+      background-color:var(--dropdown-bg);
     }
     .ant-modal-close{
       display:none;
@@ -141,7 +142,7 @@ const SideBarItems = () => {
             </div>
             <div className="flex flex-col gap-7">
             <div>
-                <h1>Are you sure you want to logout ?</h1>
+                <h1 className={styles.modal_heading}>Are you sure you want to logout ?</h1>
             </div>
             <div className="flex gap-10">
                <LogoutButton />

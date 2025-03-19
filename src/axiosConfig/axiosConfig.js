@@ -4,6 +4,7 @@ import axios from 'axios';
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: 'https://docketpay-backend-production.up.railway.app', // Base URL
+  // baseURL: "http://localhost:5000",
 
   timeout: 10000, // Request timeout in milliseconds
   headers: {
@@ -11,30 +12,34 @@ const axiosInstance = axios.create({
   },
 });
 
-// Add a request interceptor
+
+// Add request & response interceptors
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Add authorization token if available
-    const token = localStorage.getItem('token');
+    // Attach Authorization token if available
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Add a response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle errors globally
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Redirect to login or handle token expiration
-      localStorage.removeItem("token")
+    if (error.response) {
+      const { status, data } = error.response;
 
+      // Handle token expiration and authentication errors
+      if (status === 401 || status === 403) {
+        if (data?.error?.type === "TOKEN_EXPIRED") {
+          localStorage.removeItem("token");
+          window.location.href = "/login"; // Redirect only if token expired
+        
+        }
+      }
     }
     return Promise.reject(error);
   }
