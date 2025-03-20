@@ -107,7 +107,7 @@ const UpdatePassword=({isOpen,onCancel})=>{
                onFinish={onFinish}
                onFinishFailed={onFinishFailed}
          
-               className="flex flex-col gap-3"
+               className="flex flex-col gap-6 md:gap-4"
              >
                    <StyledFormItem
                          label="New Password"
@@ -128,7 +128,7 @@ const UpdatePassword=({isOpen,onCancel})=>{
                          >
                            <StyledPasswordInput placeholder="Repeat your password" disabled={isLoading} />
                          </StyledFormItem>
-                        <div className="flex w-full gap-3 justify-end mt-5">
+                        <div className="flex w-full gap-3 justify-end ">
                         <button
        className={modalStyles.logout_yes}
        type="submit"
@@ -186,9 +186,10 @@ function Settings() {
               }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
+              className="flex flex-col gap-9 md:gap-4"
             >
-              <div className="flex flex-col gap-5 w-full">
-                <div className="flex flex-col md:flex-row gap-3 w-full">
+              <div className="flex flex-col gap-6 md:gap-4 w-full">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-4 w-full">
                   <div className="w-full">
                     <StyledFormItem label="Your Name" name="name">
                       <StyledFormInput
@@ -207,7 +208,7 @@ function Settings() {
                   </div>
                  
                 </div>
-                <div className="flex flex-col md:flex-row gap-3 w-full">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-4 w-full">
                   <div className="w-full">
                     <StyledFormItem label="Address" name="address">
                       <StyledFormInput
@@ -218,15 +219,15 @@ function Settings() {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-3 w-full">
-                <div className="max-w-2xs flex flex-col gap-1">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-4 w-full">
+                <div className="max-w-2xs flex flex-col gap-3 md:gap-2">
                     <StyledFormItem label="Password" name="userPassword">
                       <StyledFormInput
                         placeholder="Enter password address"
                         disabled
                       />
                     </StyledFormItem>
-                    <span onClick={()=>setOnChangePassword(true)} style={{ cursor: "pointer", color: "blue" }}>Change ?</span>
+                    <span onClick={()=>setOnChangePassword(true)} className={styles.change_password_text} style={{cursor:"pointer"}}>Change</span>
                   </div>
                   </div>
               </div>

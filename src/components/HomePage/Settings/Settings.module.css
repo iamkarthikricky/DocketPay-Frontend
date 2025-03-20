@@ -21,3 +21,8 @@
     align-items: center;
 
 }
+.change_password_text{
+    font-family: var(--font-public);
+    font-size: var(--sub-heading);
+    color: var(--color-navy-green);
+}

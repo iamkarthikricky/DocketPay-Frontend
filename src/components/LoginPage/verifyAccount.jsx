@@ -15,8 +15,7 @@ export const VerifyAccount=()=>{
     const {token} = useParams()
 
     const onVerifyEmail=async()=>{
-       
-
+    
         try{
            const response = await axiosInstance.post(`/user/verify-email/${token}`)
            if(response?.data?.token){

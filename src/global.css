@@ -37,17 +37,30 @@ ul{
   padding: 0px;
 }
 :root{
+  --input-field-height:45px;
     --font-public:"Poppins";
     --font-size18:18px;
-    --main-heading:16px;
-    --sub-heading:14px;
-    --main-para:12px;
+    --main-heading:18px;
+    --sub-heading:16px;
+    --main-para:14px;
     --sub-para:10px;
     --description:8px;
     --font-weight300:300;
     --font-weight400:400;
     --font-weight500:500;
     --font-weight600:600;
+}
+
+@media screen and (min-width:768px) {
+  :root{
+    --input-field-height:35px;
+    --font-size18:18px;
+    --main-heading:16px;
+    --sub-heading:14px;
+    --main-para:12px;
+    --sub-para:10px;
+    --description:8px;
+  }
 }
 
 /* Define your theme variables */
@@ -62,6 +75,9 @@ ul{
     --color-red:#FA4242;
     --dropdown-bg:#f9f9f9;
     --input-bg:#ffffff;
+    --color-navy-green:var(--color-blue);
+    --dropdown-option-bg:var(--color-white);
+    --dropdown-option-bg-hover:var(--dropdown-bg);
   }
   [data-theme='dark'] {
     --page-bg:#000000;
@@ -71,16 +87,10 @@ ul{
     --color-gray:#e8e8e8;
     --dropdown-bg:#212121;
     --input-bg:#212121;
+    --color-navy-green:#16DBAA;
+    --dropdown-option-bg:#303030;
+    --dropdown-option-bg-hover:#2B2B2B;
   }
 }
 
 
-@media screen and (max-width:768px) {
-  :root{
-    --main-heading:16px;
-    --sub-heading:14px;
-    --main-para:12px;
-    --sub-para:8px;
-    --description:6px;
-  }
-}

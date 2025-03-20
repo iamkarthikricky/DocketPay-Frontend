@@ -31,7 +31,7 @@ export const StyledFormItem = styled(Form.Item)`
   margin-bottom: unset !important;
   min-width:100% !important;
   .ant-form-item-label {
-    padding-bottom: 3px !important;
+    padding-bottom: 6px !important;
   }
 
   .ant-form-item-label > label {
@@ -47,23 +47,16 @@ export const StyledFormItem = styled(Form.Item)`
     font-family: var(--font-public);
     margin: 3px 0px !important;
   }
-    input:-webkit-autofill {
-  background-color:red !important;
-  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-}
+   
 
 `;
 
 export const StyledFormInput = styled(Input)`
-input:-webkit-autofill {
-  background-color: transparent !important;
-}
-
   width: 100%; // Custom width
   border-radius: 5px; // Rounded corners
 
   background-color: var(--input-bg) !important; // Light background color
-  height: 35px;
+  height: var(--input-field-height);
   font-family: var(--font-public);
   font-size: var(--main-para);
   color: var(--color-black) !important;
@@ -91,7 +84,7 @@ export const StyledPasswordInput = styled(Input.Password)`
   border-radius: 5px; // Rounded corners
   border: 1px solid #c9c9c9; // Green border
   background-color: var(--input-bg) !important; // Light background color
-  height: 35px;
+  height: var(--input-field-height);
   font-family: var(--font-public);
   font-size: var(--main-para);
 
@@ -135,8 +128,8 @@ export const StyledPasswordInput = styled(Input.Password)`
 
 export const StyledButton = styled(Button)`
   width: 100%;
-  height: 36px;
-  margin-top: 20px;
+padding:15px;
+height:var(--input-field-height);
   font-family: var(--font-public);
   font-size: var(--sub-heading);
   color: var(--color-black);
@@ -160,7 +153,7 @@ export const LoginWithGoogle = ({ buttonText = "Continue with Google", className
   const googleLogin = useGoogleLogin({
     onSuccess: async (credentialResponse) => {
       try {
-        const response = await axios.post("http://localhost:5000/auth/google", {
+        const response = await axiosInstance.post("/auth/google", {
           code: credentialResponse?.access_token,
         });
   
@@ -202,7 +195,7 @@ export const LoginWithGoogle = ({ buttonText = "Continue with Google", className
 
   return (
     <button
-      className="w-full mt-5 h-9 rounded-lg flex items-center justify-center gap-2 "
+      className={`${className} w-full h-9 rounded-lg flex items-center justify-center gap-2`}
       onClick={handleGoogleLogin}
     >
       <FcGoogle />
@@ -282,7 +275,7 @@ export const EmailLogin = () => {
   };
 
   return (
-    <div className="h-full mt-3">
+    <div className="h-full mt-6">
       <StyledForm
         form={form}
         name="loginForm"
@@ -297,7 +290,7 @@ export const EmailLogin = () => {
         }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-6 md:gap-4"
       >
         <StyledFormItem
           label="Email"
@@ -307,9 +300,10 @@ export const EmailLogin = () => {
           <StyledFormInput
             disabled={isLoading}
             placeholder="Enter email address"
-            autoComplete="off"
+        
           />
         </StyledFormItem>
+        <div className="flex flex-col gap-3 md:gap-2">
         <StyledFormItem
           label="Password"
           name="password"
@@ -323,26 +317,29 @@ export const EmailLogin = () => {
         <Link to="/forgot-password" className={styles.forgot_password}>
           Forgot Password ?
         </Link>
+        </div>
         <StyledFormItem>
-          <StyledButton loading={isLoading} htmlType="submit">
+          <StyledButton loading={isLoading} htmlType="submit" className="mt-0 md:mt-3">
             Login
           </StyledButton>
         </StyledFormItem>
       </StyledForm>
+      <div className="flex flex-col gap-4 pt-4">
       <Divider
         plain
         style={{
-          fontSize: "12px",
+          fontSize: "var(--sub-heading)",
           color: "#ccc",
           borderColor: "#c9c9c9",
           margin: "0px",
+          fontFamily:"var(--font-public)"
         }}
       >
         or
       </Divider>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3 md:gap-2">
       
-          <LoginWithGoogle buttonText="Continue with Google"/>
+          <LoginWithGoogle buttonText="Continue with Google" className={`${styles.google_btn}`}/>
        
         <p className={`${styles.description} text-center`}>
           Don't have an account?{" "}
@@ -350,6 +347,7 @@ export const EmailLogin = () => {
             Register
           </NavLink>
         </p>
+      </div>
       </div>
     </div>
   );

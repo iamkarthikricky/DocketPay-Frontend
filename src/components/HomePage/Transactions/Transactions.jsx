@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Transactions.module.css";
 import headerStyles from '../../Header/Header.module.css';
+import Header from "../../Header/Header";
 
 const tabsList = [
   {
@@ -21,12 +22,13 @@ function Transactions() {
   const [activeTab, setActiveTab] = useState(tabsList["0"].tabName);
   return (
     <div className={`${styles.transactions_header} flex flex-col gap-6 relative h-22`}>
-    <div className={`${headerStyles.header} p-4`} style={{boxShadow:"none"}}>
+    {/* <div className={`${headerStyles.header} p-4`} style={{boxShadow:"none"}}>
               <div className="w-full flex justify-between items-center">
                 <h1 className={headerStyles.header_text}>Transactions</h1>
                 <button className={headerStyles.add_trans_btn}>+ Add</button>
               </div>
-             </div>
+             </div> */}
+             <Header routeName="Transactions" />
 
       <ul className={styles.tabs_ul_list}>
         {tabsList.map((e) => (

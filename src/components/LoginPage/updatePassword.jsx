@@ -80,7 +80,7 @@ export const UpdatePassword=()=>{
     return(
         <div className="w-screen h-screen" style={{backgroundColor:"var(--color-white)"}}>
   
-        <div className="w-full h-full p-5 md:p-0 md:w-1/2 border md:flex justify-center items-center">
+        <div className="w-full h-full p-5 flex flex-col md:p-0 md:w-1/2 justify-center items-center">
         
       <div className="flex flex-col md:max-w-80 lg:max-w-96 justify-center items-center gap-2" style={{backgroundColor:"var(--color-white)"}}>
       <h1 className={styles.welcome_text}>Create a New Password</h1>
@@ -103,6 +103,7 @@ export const UpdatePassword=()=>{
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             autoComplete="on"
+              className="flex flex-col gap-6 md:gap-4"
           >
                 <StyledFormItem
                       label="Password"
@@ -125,7 +126,7 @@ export const UpdatePassword=()=>{
                       </StyledFormItem>
                       <StyledFormItem>
                       <StyledButton loading={isLoading}
-                
+                className="mt-0 md:mt-3"
                 htmlType="submit">
                                      Submit
                                    </StyledButton>

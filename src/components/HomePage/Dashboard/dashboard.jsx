@@ -38,11 +38,14 @@ const listItems = [
 // Use a specific class name for this dropdown's styles
 const DropdownStyles = createGlobalStyle`
   .card_stats_dropdown .ant-dropdown-menu {
-    padding:0px !important;
+    padding:10px 0px !important;
     margin-top:7px !important;
     background-color:var(--dropdown-bg);
     border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
   }
 
   .card_stats_dropdown .ant-dropdown-menu-item {
@@ -67,7 +70,7 @@ const TotalPayables = () => {
 
   return (
     <div
-      className={`${styles.dashboard_card} w-full md:w-1/3 h-28 flex flex-col gap-3`}
+      className={`${styles.dashboard_card} w-full md:w-1/3 flex flex-col gap-3`}
     >
       <h1 className={styles.card_heading}>TOTAL PAYABLES</h1>
       <div
@@ -107,7 +110,7 @@ const TotalReceivables = () => {
 
   return (
     <div
-      className={`${styles.dashboard_card} w-full md:w-1/3 h-28 flex flex-col gap-3`}
+      className={`${styles.dashboard_card} w-full md:w-1/3 flex flex-col gap-3`}
     >
       <h1 className={styles.card_heading}>TOTAL RECIEVABLES</h1>
       <div
@@ -146,7 +149,7 @@ const TotalIncome = () => {
   };
   return (
     <div
-      className={`${styles.dashboard_card} w-full md:w-1/3 h-28 flex flex-col gap-3`}
+      className={`${styles.dashboard_card} w-full md:w-1/3 flex flex-col gap-3`}
     >
       <h1 className={styles.card_heading}>TOTAL INCOME</h1>
       <div
@@ -235,7 +238,7 @@ const PayablesCard=()=>{
 const Dashboard = () => {
   useEffect(() => {
     document.title = "Dashboard";
-    getAllUsers()
+  
   }, []);
 
   const getAllUsers=async()=>{
@@ -247,7 +250,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <div style={{    boxShadow: "0 5px 8px 0 #0000001a",
+    borderTop: "0.1px solid #c9c9c9"}}>
       <Header routeName="Dashboard"/>
+      </div>
       <div className="flex flex-col md:flex-row gap-4 px-4">
         <TotalPayables />
         <TotalReceivables />

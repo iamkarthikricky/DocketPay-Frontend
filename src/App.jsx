@@ -1,25 +1,37 @@
-import './global.css'
-import './App.css'
+import { useSelector } from 'react-redux';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import './App.css';
 import LoginPage from './components/LoginPage/loginPage';
-import { BrowserRouter as Router, Routes, Route,Navigate} from 'react-router-dom';
+import './global.css';
 import ProtectedRoute from './protectedRoute';
-import {useSelector} from 'react-redux';
 
+import { useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import Dashboard from './components/HomePage/Dashboard/dashboard';
+import Notifications from './components/HomePage/Notifications/Notifications';
+import Settings from './components/HomePage/Settings/Settings';
+import Transactions from './components/HomePage/Transactions/Transactions';
 import ForgotPassword from './components/LoginPage/forgotPassword';
 import CreateAccount from './components/LoginPage/signup';
-import {ToastContainer} from 'react-toastify';
-import Dashboard from './components/HomePage/Dashboard/dashboard';
-import { SideBar } from './components/SideBarNew/sidebar';
-import Transactions from './components/HomePage/Transactions/Transactions';
-import Settings from './components/HomePage/Settings/Settings';
-import Notifications from './components/HomePage/Notifications/Notifications';
-import { useEffect } from 'react';
 import { UpdatePassword } from './components/LoginPage/updatePassword';
 import { VerifyAccount } from './components/LoginPage/verifyAccount';
+import { SideBar } from './components/SideBarNew/sidebar';
 
 
 
-import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import { createGlobalStyle } from "styled-components";
+
+const GlobalTextStyles = createGlobalStyle`
+  /* Force black background on autofilled inputs */
+  input:-webkit-autofill {
+   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: var(--color-black) !important;
+    transition: background-color 5000s ease-in-out 0s; /* Prevents flash */
+     caret-color: var(--color-black) !important; /* 🔥 Fixes cursor color */
+  }
+`;
 
 const App=()=>{
 
@@ -39,7 +51,7 @@ const App=()=>{
 
   return(
     <div>
-
+      <GlobalTextStyles />
     
     <GoogleOAuthProvider clientId="667789602538-rf1am23pahsq6o1hicv2mgq9saj016sg.apps.googleusercontent.com">
     <>

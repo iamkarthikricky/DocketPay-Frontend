@@ -9,7 +9,7 @@ import { useState } from "react";
 
 import { Divider, Form,message } from 'antd';
 import axiosInstance from '../../axiosConfig/axiosConfig';
-import { StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
+import { LoginWithGoogle, StyledButton, StyledForm, StyledFormInput, StyledFormItem, StyledPasswordInput } from './loginPage';
 
 const AddUser=()=>{
     const [form] = Form.useForm();
@@ -136,14 +136,14 @@ const AddUser=()=>{
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="on"
-              className="flex flex-col gap-3"
+              className="flex flex-col gap-6 md:gap-4"
         >
              <StyledFormItem
             label="Name"
             name="name"
             rules={[{ validator: validateName }]}
           >
-            <StyledFormInput disabled={isLoading} placeholder="Enter your name" autoComplete="off"/>
+            <StyledFormInput disabled={isLoading} placeholder="Enter your name" />
           </StyledFormItem>
         
                    <StyledFormItem
@@ -151,7 +151,7 @@ const AddUser=()=>{
             name="email"
             rules={[{ validator: validateEmail }]}
           >
-            <StyledFormInput disabled={isLoading} placeholder="Enter your email address" autoComplete="off"/>
+            <StyledFormInput disabled={isLoading} placeholder="Enter your email address"/>
           </StyledFormItem>
         
           <StyledFormItem
@@ -176,29 +176,30 @@ const AddUser=()=>{
           <StyledFormItem>
                        <StyledButton loading={isLoading}
               
-                         htmlType="submit"
+                         htmlType="submit" className="mt-0 md:mt-3"
                        >
                          Sign Up
                        </StyledButton>
                      </StyledFormItem>
         </StyledForm>
-        <Divider plain style={{
-      fontSize: '12px',
-      color: '#ccc',
-      borderColor: '#c9c9c9',
-      margin:"0px"
-    }}>or</Divider>
-    <div className="flex flex-col gap-4">
-      <button className="w-full mt-5 h-9 border rounded-lg flex items-center justify-center gap-2 ">
-                <FcGoogle />
-                <p className={styles.social_text}>Google</p>
-              </button>
+        <div className="flex flex-col gap-4 pt-4">
+        <Divider plain  style={{
+          fontSize: "var(--sub-heading)",
+          color: "#ccc",
+          borderColor: "#c9c9c9",
+          margin: "0px",
+          fontFamily:"var(--font-public)"
+        }}>or</Divider>
+    <div className="flex flex-col gap-3 md:gap-2">
+      <LoginWithGoogle buttonText="Google" className={`${styles.google_btn}`}/>
+     
               <p className={`${styles.description} text-center`}>
                 Already have an account?{" "}
                 <NavLink to="/login"  className={styles.create_now_text}>
                   Sign In
                 </NavLink>
               </p>
+            </div>
             </div>
         </div>
     )

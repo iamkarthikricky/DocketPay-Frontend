@@ -2,9 +2,12 @@
     box-sizing: border-box;
 }
 .brand_img{
-    width: 100px;
+    width:100px;
     align-self: center;
-
+}
+.google_btn{
+    border: 0.7px solid var(--color-gray1);
+    height: var(--input-field-height);
 }
 .forgot_password{
     font-family:var(--font-public);
