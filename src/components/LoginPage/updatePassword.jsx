@@ -1,5 +1,5 @@
 import { Form } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../../axiosConfig/axiosConfig";
@@ -12,8 +12,7 @@ export const UpdatePassword=()=>{
 
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false);
-  
-  
+
     const {token} = useParams()
 
     const onFinishFailed = (errorInfo) => {
@@ -22,26 +21,35 @@ export const UpdatePassword=()=>{
   
     const onFinish = async (values) => {
       setIsLoading(true);
+      
       try {
-        await axiosInstance.post(`/user/reset-password/${token}`, {
+        const response = await axiosInstance.post(`/user/reset-password/${token}`, {
           newPassword: values.password,
         });
-        
-        toast.success("Password Reset Successful")
-        navigate("/login")
     
+        toast.success(response?.data?.message);
+        navigate("/login");
       } catch (error) {
-        const errorMessage = error.response?.data?.message || "An error occurred";
+        if (!error.response) {
+          return toast.error("Network error.");
+        }
     
-        if (error.response?.status === 400) {
-          form.setFields([{ name: "password", errors: [errorMessage] }]);
+        const { errorType, message } = error.response.data;
+        
+        const fieldErrors = {
+          SAME_PASSWORD: "password",
+        };
+    
+        if (fieldErrors[errorType]) {
+          form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
         } else {
-          toast.error(errorMessage)
+          toast.error(message);
         }
       } finally {
         setIsLoading(false);
       }
     };
+    
     
   
     const validatePassword = (_, value) => {
@@ -75,6 +83,8 @@ export const UpdatePassword=()=>{
             }
             return Promise.resolve();
         };
+
+        useEffect(()=>{document.title = "Update Password"},[])
 
   
     return(

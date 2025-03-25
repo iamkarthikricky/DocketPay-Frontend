@@ -47,5 +47,13 @@
   }
 
 
-
+.question_mark{
+    color:var(--color-black); /* Grey color */
+    cursor: pointer;
+    transition: color 0.3s;
+    
+  }
+.question_mark:hover {
+  color: #1890ff; /* Change color on hover */
+}
 

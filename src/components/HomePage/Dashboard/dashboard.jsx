@@ -238,7 +238,7 @@ const PayablesCard=()=>{
 const Dashboard = () => {
   useEffect(() => {
     document.title = "Dashboard";
-  
+      // getAllUsers()
   }, []);
 
   const getAllUsers=async()=>{

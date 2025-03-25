@@ -37,37 +37,32 @@ const ForgotPassword = () => {
         email: values.email,
       });
       sessionStorage.setItem("userEmail", values?.email);
+      sessionStorage.setItem("isLinkSent", true);
       dispatch(updateUserInfo({ email: values.email }));
       setIsLoading(false);
-      sessionStorage.setItem("isLinkSent", true);
       setOnSentLink(true);
-      toast.info("Reset instructions have been sent to your mail");
+      toast.info(response.data.message);
     } catch (error) {
-      setIsLoading(false);
-
       if (error.response) {
-        const { statusCode, message } = error.response.data;
+        const { statusCode, errorType, message } = error.response.data;
 
-        if (statusCode === 400) {
-          form.setFields([
-            {
-              name: "email",
-              errors: [message],
-            },
-          ]);
-        } else if (statusCode === 404) {
-          form.setFields([
-            {
-              name: "email",
-              errors: [message],
-            },
-          ]);
-        } else if (statusCode === 500) {
+        const fieldErrors = {
+          INVALID_EMAIL: "email",
+          USER_NOT_FOUND: "email",
+        };
+
+        if (fieldErrors[errorType]) {
+          form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
+        } else if (statusCode === 500 && errorType === "EMAIL_SENDING_FAILED") {
+          toast.error(message);
+        } else if (statusCode === 500 && errorType === "SERVER_ERROR") {
           toast.error(message);
         }
       }
 
       //test
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -125,14 +120,14 @@ const ForgotPassword = () => {
       ) : (
         <div className="w-full h-full flex flex-col p-5 md:p-0 md:w-1/2 justify-center items-center">
           <div className="flex flex-col items-center">
-            <div className="flex flex-col md:max-w-80 lg:max-w-96 justify-center items-center gap-2" >
+            <div className="flex flex-col md:max-w-80 lg:max-w-96 justify-center items-center gap-2">
               <h1 className={styles.welcome_text}>Forgot Password</h1>
               <p className={`${styles.description} text-center`}>
                 No worries! Enter your associated email address below, and we'll
                 send you a link to reset your password.
               </p>
             </div>
-            <div className="mt-8 w-full" >
+            <div className="mt-8 w-full">
               <StyledForm
                 form={form}
                 name="createAccountForm"

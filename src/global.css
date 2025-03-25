@@ -75,6 +75,7 @@ ul{
     --color-red:#FA4242;
     --dropdown-bg:#f9f9f9;
     --input-bg:#ffffff;
+    --skeleton-bg:#E0E0E0;
     --color-navy-green:var(--color-blue);
     --dropdown-option-bg:var(--color-white);
     --dropdown-option-bg-hover:var(--dropdown-bg);
@@ -90,6 +91,7 @@ ul{
     --color-navy-green:#16DBAA;
     --dropdown-option-bg:#303030;
     --dropdown-option-bg-hover:#2B2B2B;
+    --skeleton-bg:#333333;
   }
 }
 

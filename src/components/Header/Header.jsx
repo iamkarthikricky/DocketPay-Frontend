@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import styles from "./Header.module.css";
 
-import { DatePicker, Form, Modal, Radio, Select } from "antd";
+import modalStyles from '../SideBarNew/sidebar.module.css';
+import {
+  DatePicker,
+  Form,
+  Modal,
+  Radio,
+  Checkbox,
+  Skeleton,
+  Select,
+  Tooltip,
+} from "antd";
+import dayjs from "dayjs";
 import styled, { createGlobalStyle } from "styled-components";
 import {
   StyledButton,
@@ -9,6 +20,10 @@ import {
   StyledFormInput,
   StyledFormItem,
 } from "../LoginPage/loginPage";
+
+import { FaRegCircleQuestion } from "react-icons/fa6";
+import axiosInstance from "../../axiosConfig/axiosConfig";
+import { toast } from "react-toastify";
 
 const TransModal = styled(Modal)`
   min-width: 200px !important;
@@ -18,8 +33,8 @@ const TransModal = styled(Modal)`
     font-size: var(--sub-heading);
     color: var(--color-black);
   }
-  .ant-modal-body{
-    padding-top:25px;
+  .ant-modal-body {
+    padding-top: 25px;
   }
   .ant-modal-content {
     padding: 15px;
@@ -38,6 +53,9 @@ const TransModal = styled(Modal)`
 // Global styles for styling the dropdown menu
 const GlobalStyles = createGlobalStyle`
 /* Target the dropdown menu */
+ .ant-select-status-error{
+    border-color:#ff4d4f;
+  }
 .ant-select-dropdown {
   background-color: var(--dropdown-option-bg) !important;
   border-radius: 8px !important;
@@ -78,6 +96,8 @@ const StyledSelect = styled(Select)`
     color: var(--color-black);
   }
 
+ 
+
   .ant-select-selector {
     background-color: var(--input-bg) !important;
     border-radius: 5px; // Rounded corners
@@ -86,7 +106,7 @@ const StyledSelect = styled(Select)`
     font-size: var(--main-para);
     color: var(--color-black) !important;
     box-shadow: unset !important;
-    border-color: #c9c9c9 !important;
+    border-color: inherit !important;
     &:hover {
       border-color: #c9c9c9 !important; // Darker green on hover
     }
@@ -145,10 +165,15 @@ const DatePickerGlobalStyles = createGlobalStyle`
     background-color: green !important; /* Light gray background */
     border-radius: 8px !important;
   }
+    .ant-picker-status-error{
+    border-color:#ff4d4f !important;
+  }
 
   .ant-picker-panel-container{
      background-color: var(--dropdown-option-bg) !important;
   }
+
+ 
 
   .ant-picker-header button{
     color:var(--color-black) !important;
@@ -164,6 +189,13 @@ const DatePickerGlobalStyles = createGlobalStyle`
   font-size: var(--main-para);
   font-weight: var(--font-weight400);
   color: var(--color-black) !important;       /* Reduce opacity */
+  }
+
+  .ant-picker-header-super-next-btn{
+    display:none !important;
+  }
+    .ant-picker-header-super-prev-btn{
+    display:none !important;
   }
 
  
@@ -194,6 +226,11 @@ const DatePickerGlobalStyles = createGlobalStyle`
   font-weight: var(--font-weight400);
   color: var(--color-black) !important; 
   }
+   .ant-picker-cell-disabled {
+   
+    color: var(--color-black) !important;  /* Change hover color to red */
+    opacity: 0.5 !important;
+  }
 `;
 
 // ✅ Styled DatePicker
@@ -206,11 +243,10 @@ const StyledDatePicker = styled(DatePicker)`
   font-weight: var(--font-weight400);
   color: var(--color-black);
   box-shadow: none !important;
-  border-color: #c9c9c9 !important;
+  border-color: #c9c9c9 ;
   &:hover {
     border-color: #c9c9c9 !important;
   }
- 
 
   .ant-picker-input > input {
     font-family: var(--font-public);
@@ -224,139 +260,474 @@ const StyledDatePicker = styled(DatePicker)`
     font-family: var(--font-public);
     font-size: var(--main-para);
     font-weight: var(--font-weight400);
-    color: var(--color-black);
+    color: var(--color-black) !important;
   }
 
   /* Change calendar icon color */
   .ant-picker-suffix {
     color: var(--color-black) !important;
   }
-    .ant-picker-clear{color: var(--color-black) !important;}
+  .ant-picker-clear {
+    color: var(--color-black) !important;
+  }
 `;
 
+const StyledCheckbox = styled(Checkbox)`
+  .ant-checkbox-inner {
+    width: 15px; /* Change checkbox size */
+    height: 15px;
+    border-radius: 4px; /* Make it slightly rounded */
+    background-color: #f0f0f0; /* Custom background color */
+  }
 
-const AddTransactionModal=({isOpen,onClose})=>{
+  .ant-checkbox-label {
+    font-family: var(--font-public);
+    font-size: var(--sub-heading);
+    font-weight: var(--font-weight400);
+    color: var(--color-black);
+  }
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #1890ff; /* Change color when checked */
+    border-color: none;
+  }
 
+  .ant-checkbox-checked .ant-checkbox-inner::after {
+    border-color: white; /* Change tick color */
+  }
+
+  /* Customize hover effect */
+  &:hover .ant-checkbox-inner {
+    border-color: #40a9ff;
+  }
+`;
+
+const AddTransactionModal = ({ isOpen, onClose }) => {
   const [form] = Form.useForm();
 
   const [selectedRadio, setOnSelectRadio] = useState();
 
+  const [isLoading, setIsLoading] = useState(false);
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onFinish = (values) => {
-    console.log(values);
-  };
 
+  console.log(form.getFieldValue("reminder"))
+
+  const onFinish = async (values) => {
+    const reqBody = {
+      transactionName: values.transactionName,
+      transactionType: values.transactionType,
+      transactionCategory: values.transactionCategory,
+      transactionAmount: Number(values.transactionAmount),
+      transactionStartDate: values.transactionStartDate,
+      transactionEndDate: values.transactionEndDate,
+      reminder: values.reminder,
+      transactionRecipientType: values.transactionRecipientType,
+      ...(values.transactionRecipientType === "thirdParty" && {
+        thirdPartyEmail: values.thirdPartyEmail,
+      }),
+    };
+
+    setIsLoading(true);
+    try {
+      await axiosInstance.post("/user/add-transaction", reqBody);
+      form.resetFields();
+      toast.success("Transaction Added")
+      onClose()
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        const backendErrors = error.response.data.errors;
+        // Map backend errors to Ant Design Form
+        const errorFields = backendErrors.map(({ field, message }) => ({
+          name: field,
+          errors: [message],
+        }));
+        form.setFields(errorFields); // Set form errors dynamically
+      } else {
+        toast.error("Something went wrong! Please try again.");
+         // 🔥 Ensure form values persist even on generic errors
+       
+         form.setFieldsValue(values);
+      }
+    } finally {
+      setIsLoading(false);
+      
+    }
+  };
 
   const validateTransName = (_, value) => {
     // Regular expression to match only letters and spaces
     const nameRegex = /^[A-Za-z\s]*$/;
-
     if (!value) {
-        return Promise.reject(new Error("Required"));
-      }
+      return Promise.reject(new Error("Required"));
+    }
 
     if (!nameRegex.test(value)) {
-      return Promise.reject(new Error('Name must contain only letters and spaces!'));
+      return Promise.reject(
+        new Error("Name must contain only letters and spaces!")
+      );
     }
 
     if (value.length > 30) {
-      return Promise.reject(new Error('Name must be at most 30 characters!'));
+      return Promise.reject(new Error("Name must be at most 30 characters!"));
     }
 
     return Promise.resolve(); // Valid input
   };
 
-  return(
+  const validateEmail = (_, value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) {
+      return Promise.reject(new Error("Email is required"));
+    } else if (!emailRegex.test(value)) {
+      return Promise.reject(new Error("Please enter a valid email address"));
+    }
+    return Promise.resolve();
+  };
+
+  const handleFieldChange = (changedValues) => {
+    const changedField = Object.keys(changedValues)[0];
+    form.setFields([{ name: changedField, errors: [] }]); // ✅ Clears error for that field
+  };
+
+  const skeletonStyle = {
+    width: "30%",
+    height: 16,
+    backgroundColor: "var(--skeleton-bg)",
+  };
+  const inputSkeletonStyle = {
+    width: "100%",
+    backgroundColor: "var(--skeleton-bg)",
+  };
+
+
+
+  return (
     <TransModal
-    title="Add Transaction"
-    open={isOpen}
-    footer={false}
-    onCancel={onClose}
-  >
-    <div>
-      <StyledForm
-        form={form}
-        name="addTransForm"
-        labelCol={{
-          span: 24,
-        }}
-        wrapperCol={{
-          span: 24,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        className="flex flex-col gap-6 md:gap-3"
-      >
-        <StyledFormItem label="Transaction Name" name="transactionName" rules={[{ validator: validateTransName }]}>
-          <StyledFormInput placeholder="Enter Transaction Name"   />
-        </StyledFormItem>
-
-        <StyledFormItem label="Transaction Type">
+      title="Add Transaction"
+      open={isOpen}
+      footer={false}
+      onCancel={onClose}
+    >
+      <div>
+        <StyledForm
+          form={form}
+          name="addTransForm"
+          onValuesChange={handleFieldChange}
+          labelCol={{
+            span: 24,
+          }}
+          wrapperCol={{
+            span: 24,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className="flex flex-col gap-6 md:gap-3"
+       
+        >
           <GlobalStyles />
-          <StyledSelect placeholder="Select Transaction Type">
-            <Select.Option value="credit">Credit</Select.Option>
-            <Select.Option value="debit">Debit</Select.Option>
-          </StyledSelect>
-        </StyledFormItem>
-        <StyledFormItem label="Category">
-          <StyledSelect placeholder="Select Category">
-            <Select.Option value="lend">Lending</Select.Option>
-            <Select.Option value="investment">Investment</Select.Option>
-          </StyledSelect>
-        </StyledFormItem>
-
-        <StyledFormItem label="Amount" name="amount">
-          <StyledFormInput placeholder="Enter amount" />
-        </StyledFormItem>
-
-        <div className="flex flex-row gap-3 justify-between items-center w-full">
-          <DatePickerGlobalStyles />
-          <div className="w-1/2">
-            <StyledFormItem label="Start Date" name="startDate" >
-              <StyledDatePicker className="w-full" placeholder="Select Start Date" />
-            </StyledFormItem>
-          </div>
-
-          <div className="w-1/2">
-            <StyledFormItem label="End Date" name="endDate">
-              <StyledDatePicker className="w-full" placeholder="Select End Date" />
-            </StyledFormItem>
-          </div>
-        </div>
-
-        <StyledFormItem label="Transaction Beneficiary" name="transactionType">
-          <Radio.Group
-        
-            value={selectedRadio}
-            onChange={(e) => setOnSelectRadio(e.target.value)}
+          <StyledFormItem
+            label={
+              isLoading ? (
+                <Skeleton.Input active size="small" style={skeletonStyle} />
+              ) : (
+                "Transaction Name"
+              )
+            }
+            name="transactionName"
+            rules={[{ validator: validateTransName }]}
           >
-            <CustomRadio value="self"> Self</CustomRadio>
-            <CustomRadio value="thirdParty"> Third Party </CustomRadio>
-          </Radio.Group>
-        </StyledFormItem>
-
-        {selectedRadio === "thirdParty" && (
-          <div>
-            <StyledFormItem label="Email" name="email">
-              <StyledFormInput
-                placeholder="Enter email address"
-                autoComplete="off"
+            {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
               />
-            </StyledFormItem>
-          </div>
-        )}
-         <StyledFormItem>
-        <StyledButton  htmlType="submit">Save</StyledButton>
-        </StyledFormItem>
-      </StyledForm>
-    </div>
-  </TransModal>
-  )
-}
+            ) : (
+              <StyledFormInput placeholder="Enter Transaction Name" />
+            )}
+          </StyledFormItem>
 
+          <StyledFormItem
+          label={
+            isLoading ? (
+              <Skeleton.Input active size="small" style={skeletonStyle} />
+            ) : (
+              "Transaction Type"
+            )
+          }
+            name="transactionType"
+            rules={[{ required: true, message: "Please select an option!" }]}
+          >
+             {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledSelect placeholder="Select Transaction Type">
+              <Select.Option value="credit">Credit</Select.Option>
+              <Select.Option value="debit">Debit</Select.Option>
+            </StyledSelect> }
+          </StyledFormItem>
+
+          <StyledFormItem
+          label={
+            isLoading ? (
+              <Skeleton.Input active size="small" style={skeletonStyle} />
+            ) : (
+              "Category"
+            )
+          }
+            name="transactionCategory"
+            rules={[{ required: true, message: "Please select an option!" }]}
+          >
+             {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledSelect placeholder="Select Category">
+              <Select.Option value="lend">Lending</Select.Option>
+              <Select.Option value="investment">Investment</Select.Option>
+            </StyledSelect> }
+          </StyledFormItem>
+
+          <StyledFormItem
+            label={
+              isLoading ? (
+                <Skeleton.Input active size="small" style={skeletonStyle} />
+              ) : (
+                "Amount"
+              )
+            }
+            name="transactionAmount"
+            rules={[
+              { required: true, message: "Please enter an amount!" },
+              {
+                pattern: /^\d{1,8}(\.\d{0,2})?$/,
+                message: "Max 8 digits with 2 decimal places only!",
+              },
+            ]}
+            normalize={(value) => {
+              if (!value) return value; // Allow empty value
+              return (
+                value
+                  .replace(/[^0-9.]/g, "") // Allow only numbers & dot
+                  .replace(/^0+(\d)/, "$1") // Remove leading zeros
+                  .match(/^(\d{0,8})(\.?)(\d{0,2})?/g)?.[0] || ""
+              ); // Enforce 7 digits before decimal, 2 after
+            }}
+          >
+               {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledFormInput placeholder="Enter amount" /> }
+          </StyledFormItem>
+
+          <div className="flex flex-row gap-3 justify-between items-center w-full">
+            <DatePickerGlobalStyles />
+            <div className="w-1/2">
+              <StyledFormItem
+                label={
+                  isLoading ? (
+                    <Skeleton.Input active size="small" style={skeletonStyle} />
+                  ) : (
+                    "Start Date"
+                  )
+                }
+                name="transactionStartDate"
+                rules={[
+                  { required: true, message: "Please select a start date!" },
+                ]}
+              >
+                  {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledDatePicker
+                  className="w-full"
+                  placeholder="Select Start Date"
+                  mode="date"
+                  disabledDate={(current) => {
+                    const today = dayjs();
+                    return (
+                      current.isBefore(today.subtract(3, "days"), "day") ||
+                      current.isAfter(today.add(90, "days"), "day")
+                    );
+                  }}
+                  onChange={(date) => {
+                    const endDate = form.getFieldValue("endDate");
+
+                    // Reset End Date if it's before new Start Date
+                    if (endDate && date && date.isAfter(endDate, "day")) {
+                      form.setFieldsValue({ endDate: null });
+                    }
+                  }}
+                  onPanelChange={(value, mode) => {
+                    if (mode === "year" || mode === "month") {
+                      // Prevent switching to year or month panel
+                      return;
+                    }
+                  }}
+                /> }
+              </StyledFormItem>
+            </div>
+
+            <div className="w-1/2">
+              <StyledFormItem
+                 label={
+                  isLoading ? (
+                    <Skeleton.Input active size="small" style={skeletonStyle} />
+                  ) : (
+                    "End Date"
+                  )
+                }
+                name="transactionEndDate"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (getFieldValue("reminder")) {
+                        if (!value) {
+                          return Promise.reject(
+                            new Error("Please select an end date!")
+                          );
+                        }
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledDatePicker
+                  className="w-full"
+                  placeholder="Select End Date"
+                  mode="date"
+                  disabledDate={(current) => {
+                    const start = form.getFieldValue("transactionStartDate");
+                    if (!start) return true; // Disable until Start Date is selected
+                    return (
+                      current.isBefore(start, "day") ||
+                      current.isAfter(dayjs().add(90, "days"), "day")
+                    );
+                  }}
+                  onPanelChange={(value, mode) => {
+                    if (mode === "year" || mode === "month") {
+                      // Prevent switching to year or month panel
+                      return;
+                    }
+                  }}
+                /> }
+              </StyledFormItem>
+            </div>
+          </div>
+
+          <StyledFormItem
+           label={
+            isLoading ? (
+              <Skeleton.Input active size="small" style={skeletonStyle} />
+            ) : (
+              "Transaction Beneficiary"
+            )
+          }
+          
+            name="transactionRecipientType"
+            rules={[{ required: true, message: "Please select an option!" }]}
+          >
+            {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <Radio.Group
+              value={selectedRadio}
+              onChange={(e) => setOnSelectRadio(e.target.value)}
+            >
+              <CustomRadio value="self"> Self</CustomRadio>
+              <CustomRadio value="thirdParty"> Third Party </CustomRadio>
+            </Radio.Group> }
+          </StyledFormItem>
+
+          {selectedRadio === "thirdParty" && (
+            <div>
+              <StyledFormItem
+                 label={
+                  isLoading ? (
+                    <Skeleton.Input active size="small" style={skeletonStyle} />
+                  ) : (
+                    "Email"
+                  )
+                }
+                
+                name="thirdPartyEmail"
+                rules={[{ validator: validateEmail }]}
+              >
+                {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                block
+                style={inputSkeletonStyle}
+              />
+            ) : <StyledFormInput
+                  placeholder="Enter email address"
+                  autoComplete="off"
+                /> }
+              </StyledFormItem>
+            </div>
+          )}
+
+          <StyledFormItem name="reminder" valuePropName="checked">
+          {isLoading ? (
+              <Skeleton.Input
+                active
+                size="default"
+                width="120"
+                style={inputSkeletonStyle}
+              />
+            ) : <div className="flex items-center">
+              <StyledCheckbox>Send Reminder</StyledCheckbox>
+              <Tooltip
+                title="This will send a reminder every 3 days"
+                trigger="hover"
+              >
+                <FaRegCircleQuestion className={styles.question_mark} />
+              </Tooltip>
+            </div> }
+          </StyledFormItem>
+
+          <StyledFormItem>
+            {/* <StyledButton type="primary" htmlType="submit" loading={isLoading}>
+              Save
+            </StyledButton> */}
+            <button className={modalStyles.logout_yes} type="submit" disabled={isLoading}>Save</button>
+          </StyledFormItem>
+        </StyledForm>
+      </div>
+    </TransModal>
+  );
+};
 
 const Header = ({ routeName }) => {
   const [addTransaction, setAddTransaction] = useState(false);
@@ -373,7 +744,12 @@ const Header = ({ routeName }) => {
           </button>
         </div>
       </div>
-      {addTransaction && <AddTransactionModal isOpen={addTransaction} onClose={() => setAddTransaction(false)}/> }
+      {addTransaction && (
+        <AddTransactionModal
+          isOpen={addTransaction}
+          onClose={() => setAddTransaction(false)}
+        />
+      )}
     </React.Fragment>
   );
 };

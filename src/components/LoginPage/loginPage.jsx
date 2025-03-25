@@ -13,10 +13,9 @@ import axiosInstance from "../../axiosConfig/axiosConfig";
 
 import { toast } from "react-toastify";
 
-import axios from "axios";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice";
-import { useGoogleLogin } from "@react-oauth/google";
 
 // Create a styled component for Input
 
@@ -46,6 +45,10 @@ export const StyledFormItem = styled(Form.Item)`
     font-size: var(--main-para);
     font-family: var(--font-public);
     margin: 3px 0px !important;
+  }
+
+  .ant-form-item-required::before{
+    display:none !important;
   }
    
 
@@ -236,37 +239,34 @@ export const EmailLogin = () => {
       const response = await axiosInstance.post("/user/login", requestData);
       setIsLoading(false);
       localStorage.setItem("token", response.data.token);
+      toast.success("Login Successful");
       navigate("/dashboard");
+      
     } catch (error) {
-      setIsLoading(false);
-
-      if (error.response) {
-        const { statusCode, errorType, message } = error.response.data;
-        if (statusCode === 400 && errorType === "MISSING_CREDENTIALS") {
-          toast.error("Please fill in all fields.");
-        } else if (statusCode === 404 && errorType === "USER_NOT_FOUND") {
-          console.log("triggered");
-          form.setFields([
-            {
-              name: "email",
-              errors: [message],
-            },
-          ]);
-        } else if (statusCode === 401 && errorType === "INVALID_CREDENTIALS") {
-          form.setFields([
-            {
-              name: "password",
-              errors: [message],
-            },
-          ]);
-        } else if (statusCode === 403 && errorType === "EMAIL_NOT_VERIFIED") {
-          toast.info("Check your email for verification link.");
-        } else if (statusCode === 500) {
-          toast.error("Server error.");
-        }
-      } else {
-        toast.error("Network error.");
+   
+      if (!error.response) {
+        return toast.error("Network error.");
       }
+    
+      const { statusCode, errorType, message } = error.response.data;
+    
+      const fieldErrors = {
+        USER_NOT_FOUND: "email",
+        INVALID_CREDENTIALS: "password",
+      };
+    
+      if (errorType === "MISSING_CREDENTIALS") {
+        toast.error("Please fill in all fields.");
+      } else if (fieldErrors[errorType]) {
+        form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
+      } else if (errorType === "EMAIL_NOT_VERIFIED") {
+        toast.info("Check your email for the verification link.");
+      } else if (statusCode === 500) {
+        toast.error("Server error.");
+      }
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
