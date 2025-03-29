@@ -75,6 +75,7 @@ const SideBarItems = () => {
         setIsModalOpen(false);
       };
 
+      const {currentUserInfo} = useSelector((state)=>state.auth)
    
    
   return (
@@ -120,11 +121,13 @@ const SideBarItems = () => {
       </NavLink>
     </nav>
     <div className={styles.user_info}>
-       <div className="flex items-start gap-2">
-            <Avatar size={35}/>
+       <div className="flex justify-between gap-2">
+        <div className="flex gap-3">
+            <Avatar size={35} style={{backgroundColor:"var(--dropdown-option-bg)"}}/>
             <div className="flex flex-col items-baseline gap-1">
-                <p className={styles.user_info_name}>Karthik Maheshwarapu</p>
-                <p className={styles.user_info_email}>iamkarthikricky@gmail.com</p>
+                <p className={styles.user_info_name}>{currentUserInfo.userName}</p>
+                <p className={styles.user_info_email}>{currentUserInfo.userEmail}</p>
+            </div>
             </div>
             <button className={styles.logout_btn} onClick={()=>setIsModalOpen(true)}>
             <IoMdLogOut />

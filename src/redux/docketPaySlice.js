@@ -15,9 +15,9 @@ const docketPaySlice = createSlice({
           onToggleTheme: (state) => {
             state.darkMode = !state.darkMode;
             localStorage.setItem("darkMode", JSON.stringify(state.darkMode)); // Store in localStorage
-          },
+          },    
     }
 })
 
-export const {onToggleHeader,onToggleTheme} = docketPaySlice.actions;
+export const {onToggleHeader,onToggleTheme,onFetchTransactions,onAddTransactionInfo} = docketPaySlice.actions;
 export default docketPaySlice.reducer;

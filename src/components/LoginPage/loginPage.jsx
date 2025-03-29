@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 
 import { Button, Divider, Form, Input } from "antd";
 
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-import { login } from "../../redux/authSlice";
+import { login, updateUserInfo } from "../../redux/authSlice";
 
 // Create a styled component for Input
 
@@ -153,57 +153,68 @@ export const LoginWithGoogle = ({ buttonText = "Continue with Google", className
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading,setIsLoading] = useState(false);
+
   const googleLogin = useGoogleLogin({
-    onSuccess: async (credentialResponse) => {
+    onSuccess: async ({ access_token }) => {
+      setIsLoading(true);
+  
       try {
-        const response = await axiosInstance.post("/auth/google", {
-          code: credentialResponse?.access_token,
+        const { data } = await axiosInstance.post("/auth/google", {
+          code: access_token, // Destructured directly
         });
   
-        const { token, message } = response.data;
+        const { token, message, user } = data;
   
         // Show success message
         toast.info(message);
-        
-        // Store token in Redux
+  
+        // Store token & user in Redux
         dispatch(login(token));
+        dispatch(updateUserInfo(user));
   
         // Redirect to homepage
         navigate("/");
       } catch (error) {
-        // Handle different error scenarios
-        if (error.response) {
-          // Backend responded with an error (e.g., 400, 401, 500)
-          toast.error(error.response.data.message || "Something went wrong!");
-        } else if (error.request) {
-          // Request was made but no response received
-          toast.error("Server is not responding. Please try again later.");
-        } else {
-          // Other unknown errors
-          toast.error("An unexpected error occurred.");
-        }
-  
+        const errorMessage =
+          error.response?.data?.message || "Something went wrong!";
+        toast.error(errorMessage);
         console.error("Google Login Error:", error);
+      } finally {
+        setIsLoading(false);
       }
     },
     onError: () => {
       toast.error("Google login failed. Please try again.");
+      setIsLoading(false);
     },
   });
+  
   
 
   function handleGoogleLogin() {
     googleLogin(); // Call the returned function when needed
+   
   }
 
   return (
-    <button
+    <React.Fragment>
+         <button
       className={`${className} w-full h-9 rounded-lg flex items-center justify-center gap-2`}
       onClick={handleGoogleLogin}
     >
       <FcGoogle />
       <p className={styles.social_text}>{buttonText}</p>
     </button>
+    {isLoading &&  <div className={styles.loading_view_container}>
+<div className="flex flex-row gap-2">
+  <div className="w-4 h-4 rounded-full bg-lime-600 animate-bounce [animation-delay:.7s]"></div>
+  <div className="w-4 h-4 rounded-full bg-lime-600 animate-bounce [animation-delay:.3s]"></div>
+  <div className="w-4 h-4 rounded-full bg-lime-600 animate-bounce [animation-delay:.7s]"></div>
+</div>
+          </div> }
+    </React.Fragment>
+   
   );
 };
 
@@ -212,9 +223,30 @@ export const EmailLogin = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+
+
   const validatePassword = (_, value) => {
+    const minLength = 8;
+    const maxLength = 20;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
     if (!value) {
       return Promise.reject(new Error("Password is required"));
+    }
+    if (value.length < minLength) {
+      return Promise.reject(
+        new Error(`Password must be at least ${minLength} characters.`)
+      );
+    }
+    if (value.length > maxLength) {
+      return Promise.reject(
+        new Error(`Password must not exceed ${maxLength} characters.`)
+      );
+    }
+    if (!specialCharRegex.test(value)) {
+      return Promise.reject(
+        new Error("Password must contain at least one special character.")
+      );
     }
     return Promise.resolve();
   };
@@ -231,39 +263,70 @@ export const EmailLogin = () => {
 
   const navigate = useNavigate();
 
+  const dispatch = useDispatch()
+
   const onFinish = async (values) => {
     const { email, password } = values;
     const requestData = { email, password };
     try {
       setIsLoading(true);
-      const response = await axiosInstance.post("/user/login", requestData);
+    
+      const { data } = await axiosInstance.post("/user/login", requestData);
+    
+      console.log(data)
+
       setIsLoading(false);
-      localStorage.setItem("token", response.data.token);
-      toast.success("Login Successful");
+      localStorage.setItem("token", data.token);
+      toast.success(data.message);
+      dispatch(updateUserInfo(data.user));
       navigate("/dashboard");
-      
     } catch (error) {
    
       if (!error.response) {
         return toast.error("Network error.");
       }
-    
-      const { statusCode, errorType, message } = error.response.data;
-    
-      const fieldErrors = {
-        USER_NOT_FOUND: "email",
-        INVALID_CREDENTIALS: "password",
-      };
-    
-      if (errorType === "MISSING_CREDENTIALS") {
-        toast.error("Please fill in all fields.");
-      } else if (fieldErrors[errorType]) {
-        form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
-      } else if (errorType === "EMAIL_NOT_VERIFIED") {
-        toast.info("Check your email for the verification link.");
-      } else if (statusCode === 500) {
-        toast.error("Server error.");
+
+      if (error.response?.data) {
+        const { errors, errorType } = error.response.data;
+      
+        if (Array.isArray(errors)) {
+          const errorFields = errors.map(({ field, message }) => ({
+            name: field,
+            errors: [message],
+          }));
+      
+          form.setFields(errorFields); // Set form errors dynamically
+        } else {
+          const messages = {
+            EMAIL_NOT_VERIFIED: "Check your email for the verification link.",
+            SERVER_ERROR: "Server error.",
+          };
+      
+          if (messages[errorType]) {
+            toast[errorType === "SERVER_ERROR" ? "error" : "info"](messages[errorType]);
+          }
+        }
       }
+      
+ 
+
+     
+      // const { statusCode, errorType, error: { message } = {} } = error?.response?.data || {};
+
+      // const fieldErrors = {
+      //   USER_NOT_FOUND: "email",
+      //   INVALID_CREDENTIALS: "password",
+      // };
+    
+      // if (errorType === "MISSING_CREDENTIALS") {
+      //   toast.error("Please fill in all fields.");
+      // } else if (fieldErrors[errorType]) {
+      //   form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
+      // } else if (errorType === "EMAIL_NOT_VERIFIED") {
+      //   toast.info("Check your email for the verification link.");
+      // } else if (statusCode === 500) {
+      //   toast.error("Server error.");
+      // }
     }
     finally{
       setIsLoading(false);
@@ -273,6 +336,12 @@ export const EmailLogin = () => {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const handleFieldChange = (changedValues) => {
+    const changedField = Object.keys(changedValues)[0];
+    form.setFields([{ name: changedField, errors: [] }]); // ✅ Clears error for that field
+  };
+
 
   return (
     <div className="h-full mt-6">
@@ -288,6 +357,7 @@ export const EmailLogin = () => {
         initialValues={{
           remember: true,
         }}
+        onValuesChange={handleFieldChange}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         className="flex flex-col gap-6 md:gap-4"
@@ -358,13 +428,15 @@ const NewLoginPage = () => {
     document.title = "Login";
   }, []);
 
+
+
   return (
     <div
       className="w-screen h-screen"
       style={{ backgroundColor: "var(--color-white)" }}
     >
       <div className="w-full h-full p-5 md:p-0 md:w-1/2 flex justify-center items-center">
-        <div>
+       <div>
           <div className="flex flex-col md:max-w-96 justify-center items-center gap-2">
             <img
               src={BrandImg}
@@ -379,7 +451,7 @@ const NewLoginPage = () => {
           <div>
             <EmailLogin />
           </div>
-        </div>
+        </div> 
       </div>
     </div>
   );

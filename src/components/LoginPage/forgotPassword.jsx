@@ -1,6 +1,6 @@
 import styles from "./loginPage.module.css";
 
-import { Form, message } from "antd";
+import { Form } from "antd";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axiosConfig/axiosConfig";
 import {
@@ -12,7 +12,6 @@ import {
 
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateUserInfo } from "../../redux/authSlice";
 import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
@@ -38,12 +37,16 @@ const ForgotPassword = () => {
       });
       sessionStorage.setItem("userEmail", values?.email);
       sessionStorage.setItem("isLinkSent", true);
-      dispatch(updateUserInfo({ email: values.email }));
+      // dispatch(updateUserInfo({ email: values.email }));
       setIsLoading(false);
       setOnSentLink(true);
       toast.info(response.data.message);
     } catch (error) {
-      if (error.response) {
+
+       if (!error.response) {
+              return toast.error("Network error.");
+            }
+
         const { statusCode, errorType, message } = error.response.data;
 
         const fieldErrors = {
@@ -58,9 +61,6 @@ const ForgotPassword = () => {
         } else if (statusCode === 500 && errorType === "SERVER_ERROR") {
           toast.error(message);
         }
-      }
-
-      //test
     } finally {
       setIsLoading(false);
     }

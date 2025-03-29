@@ -40,3 +40,20 @@
     font-weight: var(--font-weight500);
     color: var(--color-black);
 }
+
+.loading_view_container{
+    align-items: center;
+    background: #313131cc;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    left: 0;
+    padding: 10px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100vw;
+    z-index: 1;
+}

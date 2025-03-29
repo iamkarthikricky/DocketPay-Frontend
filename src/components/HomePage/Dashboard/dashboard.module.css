@@ -34,6 +34,13 @@
     font-weight: var(--font-weight600);
     color: inherit;
 }
+
+.failure_text{
+    font-family: var(--font-public);
+    font-size: var(--main-para);
+    font-weight: var(--font-weight300);
+    color:var(--color-black);
+}
 .dropdown_btn{
     font-family: var(--font-public);
     font-size: var(--main-para);

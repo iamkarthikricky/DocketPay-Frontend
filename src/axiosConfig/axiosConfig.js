@@ -1,5 +1,6 @@
 // src/utils/axiosConfig.js
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
@@ -36,6 +37,7 @@ axiosInstance.interceptors.response.use(
       if (status === 401 || status === 403) {
         if (data?.error?.type === "TOKEN_EXPIRED") {
           localStorage.removeItem("token");
+          toast.info("Session Expired")
           window.location.href = "/login"; // Redirect only if token expired
         
         }

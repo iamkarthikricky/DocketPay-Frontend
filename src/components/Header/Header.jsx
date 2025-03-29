@@ -311,9 +311,6 @@ const AddTransactionModal = ({ isOpen, onClose }) => {
     console.log("Failed:", errorInfo);
   };
 
-
-  console.log(form.getFieldValue("reminder"))
-
   const onFinish = async (values) => {
     const reqBody = {
       transactionName: values.transactionName,

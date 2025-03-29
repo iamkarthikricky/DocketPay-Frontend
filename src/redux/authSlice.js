@@ -2,8 +2,9 @@ import { createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
   token: localStorage.getItem("token") ?? null, // Get token from localStorage
-  currentUserInfo:{currentStep:1,userEmail:null}
+  currentUserInfo:{userEmail:sessionStorage.getItem("userEmail") ?? "user@gmail.com",userName:sessionStorage.getItem("userEmail") ?? "User User"}
 };
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -18,12 +19,16 @@ const authSlice = createSlice({
       localStorage.removeItem("token"); // Remove from localStorage
     },
     updateUserInfo: (state, action) => {
-      state.currentUserInfo = {
-        ...state.currentUserInfo, // Preserve existing state
-        ...action.payload, // Merge new values
-      };    
-    }
+      const { email, name } = action.payload;
     
+      if (email) sessionStorage.setItem("userEmail", email);
+      if (name) sessionStorage.setItem("userName", name);
+    
+      state.currentUserInfo = {
+        userEmail: email ?? state.currentUserInfo.userEmail,
+        userName: name ?? state.currentUserInfo.userName
+      };
+    }
   },
 });
 

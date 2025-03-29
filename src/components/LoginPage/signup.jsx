@@ -35,25 +35,33 @@ const AddUser = () => {
       toast.info(response.data.message);
       form.resetFields();
     } catch (error) {
-      if (error.response) {
-        const { statusCode, errorType, message } = error.response.data;
-        
-        const fieldErrors = {
-          INVALID_NAME: "name",
-          INVALID_EMAIL: "email",
-          INVALID_PASSWORD: "password",
-          EMAIL_ALREADY_EXISTS: "email",
-        };
+       if (!error.response) {
+              return toast.error("Network error.");
+            }
+   
+            if (error.response?.data) {
+              const { errors, errorType } = error.response.data;
 
-        if (fieldErrors[errorType]) {
-          form.setFields([{ name: fieldErrors[errorType], errors: [message] }]);
-        } else if (statusCode === 500 && errorType === "EMAIL_SENDING_FAILED") {
-          toast.error(message);
-        }
-        else if (statusCode === 500 && errorType === "SERVER_ERROR") {
-          toast.error(message);
-        }
-      }
+              if (Array.isArray(errors)) {
+                const errorFields = errors.map(({ field, message }) => ({
+                  name: field,
+                  errors: [message],
+                }));
+                form.setFields(errorFields); // Set form errors dynamically
+            }
+
+            else{
+              const messages = {
+                EMAIL_SENDING_FAILED: "Failed to send verification email",
+                SERVER_ERROR: "Server error",
+              };
+
+               if (messages[errorType]) {
+                          toast.error(messages[errorType]);
+                        }
+            }
+
+          }
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +129,10 @@ const AddUser = () => {
       );
     }
 
+    if (value.length < 3) {
+      return Promise.reject(new Error("Name must be atleast 3 characters!"));
+    }
+
     if (value.length > 25) {
       return Promise.reject(new Error("Name must be at most 25 characters!"));
     }
@@ -130,10 +142,17 @@ const AddUser = () => {
 
   useEffect(()=>{document.title = "Register"},[])
 
+
+  const handleFieldChange = (changedValues) => {
+    const changedField = Object.keys(changedValues)[0];
+    form.setFields([{ name: changedField, errors: [] }]); // ✅ Clears error for that field
+  };
+
   return (
     <div className="h-full mt-3">
       <StyledForm
         form={form}
+        onValuesChange={handleFieldChange}
         name="createAccountForm"
         labelCol={{
           span: 24,
